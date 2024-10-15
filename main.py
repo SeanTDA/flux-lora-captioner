@@ -6,9 +6,7 @@ import requests
 import keys
 from PIL import Image
 import matplotlib.pyplot as plt
-
-
-
+import shutil
 
 
 def encode_image(image_path):
@@ -103,9 +101,11 @@ def save_caption(file_counter, folder, caption):
         f.write(caption)
     print(f"Saved caption as {caption_filename}")
 
-def rename_image_files(folder_path):
+def rename_image_files(folder_path, train_folder_path):
     # Counter for renaming
     counter = 1
+    if not os.listdir(train_folder_path):
+        os.makedirs(train_folder_path)
 
     # Iterate through each file in the folder
     for filename in os.listdir(folder_path):
@@ -117,13 +117,40 @@ def rename_image_files(folder_path):
             # Construct the new filename with the counter
             new_filename = f"{counter}{file_extension}"
             old_file_path = os.path.join(folder_path, filename)
-            new_file_path = os.path.join(folder_path, new_filename)
+            new_file_path = os.path.join(train_folder_path, new_filename)
             
             # Rename the file
-            os.rename(old_file_path, new_file_path)
+            shutil.copy(old_file_path, new_file_path)
             
             print(f"Renamed {filename} to {new_filename}")
             counter += 1
+
+def convert_images_to_png(folder_path):
+    # Iterate through each file in the folder
+    for filename in os.listdir(folder_path):
+        # Check if the file is a valid image
+        if is_valid_image_file(filename):
+            # Construct the full file path
+            file_path = os.path.join(folder_path, filename)
+
+            # Open the image
+            with Image.open(file_path) as img:
+                # Convert to RGB mode if necessary (to avoid issues with palette images like GIF)
+                if img.mode in ("RGBA", "P", "LA"):
+                    img = img.convert("RGB")
+
+                # Define the new filename with .png extension
+                new_filename = os.path.splitext(filename)[0] + ".png"
+                new_file_path = os.path.join(folder_path, new_filename)
+
+                # Save the image as PNG
+                img.save(new_file_path, "PNG")
+
+                print(f"Converted {filename} to {new_filename}")
+
+                # Optionally, you can remove the original file after converting
+                if new_file_path != file_path:
+                    os.remove(file_path)
 
 
 def process_images(folder):
@@ -144,9 +171,11 @@ def process_images(folder):
 
     # Step 2. Rename images to sequential numbers
     print("")
-    rename_image_files(folder)
+    train_folder_path = os.path.join(folder, "train")
+    rename_image_files(folder, train_folder_path)
 
-    # Todo: Convert all images to png
+    # Step 3. Convert all images to PNG
+    convert_images_to_png(train_folder_path)
 
     # Prepare the intro prompt
     prompt_modified = PROMPT_INTRO
@@ -164,7 +193,7 @@ def process_images(folder):
         if not is_valid_image_file(filename):
             continue
 
-        file_path = os.path.join(folder, filename)
+        file_path = os.path.join(train_folder_path, filename)
 
         # Open and display the image
         image = Image.open(file_path)
@@ -210,7 +239,7 @@ def process_images(folder):
 
         # Save Caption
         print("\nCaption Accepted")
-        save_caption(file_counter, folder, gpt_caption)
+        save_caption(file_counter, train_folder_path, gpt_caption)
 
         # Increment file counter
         file_counter += 1
