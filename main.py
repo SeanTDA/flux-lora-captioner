@@ -104,8 +104,6 @@ def save_caption(file_counter, folder, caption):
 def rename_image_files(folder_path, train_folder_path):
     # Counter for renaming
     counter = 1
-    if not os.listdir(train_folder_path):
-        os.makedirs(train_folder_path)
 
     # Iterate through each file in the folder
     for filename in os.listdir(folder_path):
@@ -174,6 +172,7 @@ def process_images(folder):
     train_folder_path = os.path.join(folder, "train")
     if not os.path.exists(train_folder_path):
         os.makedirs(train_folder_path)
+    print("test")
         
     rename_image_files(folder, train_folder_path)
 
