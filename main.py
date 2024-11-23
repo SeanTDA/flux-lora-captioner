@@ -97,8 +97,9 @@ def save_caption(file_counter, folder, caption):
     # Construct the file path with the sequential number and .txt extension
     caption_filename = os.path.join(folder, f"{file_counter}.txt")
     # Write the caption to the file
+    sanitised_caption = caption.replace("'", "").replace('"', "")
     with open(caption_filename, 'w', encoding='utf-8') as f:
-        f.write(caption)
+        f.write(sanitised_caption)
     print(f"Saved caption as {caption_filename}")
 
 def rename_image_files(folder_path, train_folder_path):
@@ -216,7 +217,7 @@ def process_images(folder):
             print("\n-------> " + filename + ":")
             if edit_requests != "":
                 print(edit_requests)
-            print("GPT Caption: " + gpt_caption)
+            print("\nGPT Caption: " + gpt_caption)
 
             # Edit Requests for Image 1 and 2
             if file_counter in IMAGES_TO_FINETUNE:
