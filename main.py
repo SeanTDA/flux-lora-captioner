@@ -172,6 +172,9 @@ def process_images(folder):
     # Step 2. Rename images to sequential numbers
     print("")
     train_folder_path = os.path.join(folder, "train")
+    if not os.path.exists(train_folder_path):
+        os.makedirs(train_folder_path)
+        
     rename_image_files(folder, train_folder_path)
 
     # Step 3. Convert all images to PNG
