@@ -185,7 +185,10 @@ def process_images(folder):
     prompt_modified = prompt_modified.replace("<TRIGGER_WORD>",trigger_word)
     prompt_modified = prompt_modified.replace("<CHARACTER_TYPE>",character_type)
 
-    edit_requests = ""
+    edit_requests = f"""- Ensure you mention the angle in the second sentence (e.g. front view, side view, three quarter view etc.) and its placement/lighting
+- Ensure you mention the background
+- Don't mention the colour/label details of the {character_type}
+    """
 
     # Iterate through files
     file_counter = 1

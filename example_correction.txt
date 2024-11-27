@@ -1,0 +1,3 @@
+- Ensure you mention the angle in the second sentence (e.g. front view / side view / three quarter view etc), and its placement/lighting
+- Ensure you mention the background
+- Don't need to mention the colour/label details of the product
